@@ -1,11 +1,12 @@
 
-int xPin=0;//Connect x pin of adxl335 to pin A0
-int yPin=1;//Connect y pin of adxl335 to pin A1
+//int xPin=0;//Connect x pin of adxl335 to pin A0
+//int yPin=1;//Connect y pin of adxl335 to pin A1
 
 int lm=9;
 int lmr=8;
 int rm=10;
 int rmr=7;
+int rled=5;
 int ledPin=13;//led on pin 13 is ON except when bot is stationary
 
 void setup()
@@ -17,64 +18,95 @@ void setup()
  pinMode(lmr,OUTPUT);
  pinMode(rm,OUTPUT);
  pinMode(rmr,OUTPUT);
-
+pinMode(rled,OUTPUT);
 }
 void loop()
 {
-   int xval=analogRead(xPin);
-  int yval=analogRead(yPin);
+  int xval=analogRead(A0);
+  int yval=analogRead(A1);
+
+  Serial.print("xval=");
+  Serial.println(xval);//Use xval to determine threshold for different directions
   
+  Serial.print("yval=");
+  Serial.println(yval); //Use yval to determine threshold for different directions
+
+  //delay(1000); //used to display values after 2s delay
+  Serial.print("\n");//print after 2s in a new line
     if (xval > 305 && xval < 360)//Stationary
     {
-      digitalWrite(lm,LOW);  
-      digitalWrite(lmr,LOW);
-      digitalWrite(rm,LOW);
-      digitalWrite(rmr,LOW);
-    
-      digitalWrite(ledPin,LOW);
+      stationary();
     }
-    else
-    {
       if(xval > 360)//Forward
       {
-        digitalWrite(lm,LOW);  
-        digitalWrite(lmr,HIGH);
-        digitalWrite(rm,HIGH);
-        digitalWrite(rmr,LOW);
-        
-        digitalWrite(ledPin,HIGH);
+        forward();
       }
     
       if(xval < 305)//Backward
       {
-        digitalWrite(lm,HIGH);  
-        digitalWrite(lmr,LOW);
-        digitalWrite(rm,LOW);
-        digitalWrite(rmr,HIGH);
-        
-        digitalWrite(ledPin,HIGH);
-      }
-    /*
-      if (buf[i]==0x72)//Left 
-      {
-        digitalWrite(lm,LOW);  
-        digitalWrite(lmr,LOW);
-        digitalWrite(rm,HIGH);
-        digitalWrite(rmr,LOW);
-        digitalWrite(ledPin,HIGH);
+       back();
       }
     
-      if (buf[i]==0x6C)//Right 
+      if(yval > 360)//Left 
       {
-        digitalWrite(lm,LOW);  
-        digitalWrite(lmr,HIGH);
-        digitalWrite(rm,LOW);
-        digitalWrite(rmr,LOW);
-        digitalWrite(ledPin,HIGH);
+        left();
       }
-      */
     
-    Serial.print("\n");// debugging
-        }
-        delay(1000);
+      if(yval < 305)//Right 
+      {
+        right();
+      }
+      
+//    Serial.print("\n");// debugging
+//        delay(1000);
 }
+
+/////////////////////////////////////////////////
+
+void forward()
+{
+  digitalWrite(lm,LOW);  
+  digitalWrite(lmr,HIGH);
+  digitalWrite(rm,HIGH);
+  digitalWrite(rmr,LOW);
+  Serial.print("FORWARD");
+  
+  digitalWrite(ledPin,HIGH);
+}
+
+void back()
+{
+   digitalWrite(lm,HIGH);  
+    digitalWrite(lmr,LOW);
+    digitalWrite(rm,LOW);
+    digitalWrite(rmr,HIGH);
+    
+    digitalWrite(ledPin,HIGH);
+}
+
+void left(){
+
+  digitalWrite(lm,HIGH);  
+  digitalWrite(lmr,LOW);
+  digitalWrite(rm,LOW);
+  digitalWrite(rmr,LOW);
+  digitalWrite(ledPin,HIGH);
+}
+
+void right()
+{
+  digitalWrite(lm,LOW);  
+  digitalWrite(lmr,LOW);
+  digitalWrite(rm,HIGH);
+  digitalWrite(rmr,LOW);
+  
+  Serial.print("RIGHT");
+}
+
+void stationary(){
+  digitalWrite(lm,LOW);  
+  digitalWrite(lmr,LOW);
+  digitalWrite(rm,LOW);
+  digitalWrite(rmr,LOW);
+}
+
